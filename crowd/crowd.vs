@@ -83,7 +83,7 @@ public final class Crowd {
     }
 
     /// NearObstacles is the obstacles whose edge is within `distance` of a point.
-    public func NearObstacles(_ p: geom.Vec3, within distance: float32) -> [int] {
+    public func NearObstacles(p: geom.Vec3, within distance: float32) -> [int] {
         var out: [int] = []
         let reach = distance + 1.5
         let x0 = cellOf(p.X - reach), x1 = cellOf(p.X + reach)
@@ -104,7 +104,7 @@ public final class Crowd {
 
     /// Add puts a walker in the crowd and answers its index.
     @discardableResult
-    public func Add(_ w: Walker) -> int {
+    public func Add(w: Walker) -> int {
         Walkers.append(w)
         return Walkers.count - 1
     }
@@ -121,7 +121,7 @@ public final class Crowd {
 
     /// Near is the solid walkers within `distance` of a point (as filed by
     /// the last Update).
-    public func Near(_ p: geom.Vec3, within distance: float32) -> [int] {
+    public func Near(p: geom.Vec3, within distance: float32) -> [int] {
         var out: [int] = []
         let x0 = cellOf(p.X - distance), x1 = cellOf(p.X + distance)
         let z0 = cellOf(p.Z - distance), z1 = cellOf(p.Z + distance)
@@ -143,7 +143,7 @@ public final class Crowd {
     /// keep clear of the others: what it should ask its legs for. Its
     /// speed stays at most the wanted one's (or a slow shuffle, when it
     /// only wants to stand and is being crowded).
-    public func Steer(_ i: int, _ wanted: geom.Vec3) -> geom.Vec3 {
+    public func Steer(i: int, wanted: geom.Vec3) -> geom.Vec3 {
         let me = Walkers[i]
         let want = geom.Vec3(wanted.X, 0, wanted.Z)
         let speed = want.Length()
@@ -224,18 +224,18 @@ public final class Crowd {
         return v
     }
 
-    func cellOf(_ x: float32) -> int {
+    func cellOf(x: float32) -> int {
         return int(math.Floor(x / Cell))
     }
 
-    func key(_ x: int, _ z: int) -> int {
+    func key(x: int, z: int) -> int {
         return (x + (1 << 20)) << 21 | (z + (1 << 20))
     }
 }
 
 // right is to the right of the way a walker wants to go: when two meet
 // head on, each keeps right, so they pass on opposite sides.
-func right(_ want: geom.Vec3) -> geom.Vec3 {
+func right(want: geom.Vec3) -> geom.Vec3 {
     var f = want.LengthSquared() > 1e-6 ? want.Normalized() : geom.Vec3(0, 0, 1)
     f.Y = 0
     return geom.Vec3(-f.Z, 0, f.X)

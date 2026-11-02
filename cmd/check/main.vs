@@ -11,12 +11,12 @@ import (
 
 var failures = 0
 
-func check(_ ok: bool, _ what: string) {
+func check(ok: bool, what: string) {
     print(ok ? "ok    \(what)" : "FAIL  \(what)")
     if !ok { failures += 1 }
 }
 
-func c(_ x: int32, _ y: int32, _ z: int32) -> geom.IVec3 { return geom.IVec3(x, y, z) }
+func c(x: int32, y: int32, z: int32) -> geom.IVec3 { return geom.IVec3(x, y, z) }
 
 func main() -> int32 {
     let two = grid.Agent(height: 2)
@@ -137,7 +137,7 @@ func main() -> int32 {
 
 // walk moves a crowd for `seconds`, each walker wanting `wants[i]`, and
 // answers the closest any two came (edge to edge).
-func walk(_ c: crowd.Crowd, _ wants: [geom.Vec3], seconds: float32) -> float32 {
+func walk(c: crowd.Crowd, wants: [geom.Vec3], seconds: float32) -> float32 {
     let dt: float32 = 1.0 / 30
     var closest: float32 = 1e9
     var t: float32 = 0

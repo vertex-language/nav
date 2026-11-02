@@ -93,7 +93,7 @@ public struct Path {
 let up = geom.IVec3(int32(0), 1, 0)
 
 /// Clear is whether an agent's body fits with its feet in c.
-public func Clear(_ c: geom.IVec3, _ agent: Agent, _ t: Terrain) -> bool {
+public func Clear(c: geom.IVec3, agent: Agent, t: Terrain) -> bool {
     var i: int32 = 0
     while i < agent.Height {
         if t.Solid(c + up * i) { return false }
@@ -105,7 +105,7 @@ public func Clear(_ c: geom.IVec3, _ agent: Agent, _ t: Terrain) -> bool {
 /// Stands is whether an agent can be with its feet in c: its body fits,
 /// and the cell below holds it up or it is swimming, and the cell isn't
 /// one to avoid.
-public func Stands(_ c: geom.IVec3, _ agent: Agent, _ t: Terrain) -> bool {
+public func Stands(c: geom.IVec3, agent: Agent, t: Terrain) -> bool {
     if !Clear(c, agent, t) { return false }
     let fluid = t.Fluid(c)
     if fluid && !agent.Swims { return false }
@@ -116,7 +116,7 @@ public func Stands(_ c: geom.IVec3, _ agent: Agent, _ t: Terrain) -> bool {
 /// Settle is the standable cell an agent at c would end up in: c itself,
 /// or the first below it within `drop`, or, when c is inside something,
 /// the first clear one above it within `rise`. Nil when there is none.
-public func Settle(_ c: geom.IVec3, _ agent: Agent, _ t: Terrain, drop: int32 = 8, rise: int32 = 8) -> geom.IVec3? {
+public func Settle(c: geom.IVec3, agent: Agent, t: Terrain, drop: int32 = 8, rise: int32 = 8) -> geom.IVec3? {
     if Stands(c, agent, t) { return c }
     if t.Solid(c) {
         var k: int32 = 1
@@ -143,14 +143,14 @@ let dz: [int32] = [0, 0, 1, -1, 1, -1, 1, -1]
 
 // key packs a cell into an int: 21 bits an axis, which is ±1 million
 // cells, far more than a search reaches.
-func key(_ c: geom.IVec3) -> int {
+func key(c: geom.IVec3) -> int {
     let m = 0x1fffff
     return ((int(c.X) & m) << 42) | ((int(c.Y) & m) << 21) | (int(c.Z) & m)
 }
 
 // heuristic is the octile distance across plus the climb: never more
 // than a path's true cost, so A* stays optimal.
-func heuristic(_ a: geom.IVec3, _ b: geom.IVec3) -> float32 {
+func heuristic(a: geom.IVec3, b: geom.IVec3) -> float32 {
     let x = float32(abs(a.X - b.X)), z = float32(abs(a.Z - b.Z)), y = float32(abs(a.Y - b.Y))
     return math.Max(x, z) + 0.41421356 * math.Min(x, z) + y * 0.5
 }
@@ -174,7 +174,7 @@ public func Find(from: geom.IVec3, to goal: geom.IVec3, agent: Agent, terrain t:
     var expanded = 0
 
     // add offers a way to cell c from node n at a step cost.
-    func add(_ c: geom.IVec3, _ n: int32, _ step: float32) {
+    func add(c: geom.IVec3, n: int32, step: float32) {
         let cost = g[int(n)] + step + t.Cost(c) + (t.Fluid(c) ? agent.SwimCost : 0)
         let k = key(c)
         if let i = index[k] {
@@ -312,7 +312,7 @@ public struct Follower {
     /// The next cell to reach.
     public var Index: int
 
-    public init(_ path: Path) {
+    public init(path: Path) {
         Path = path
         Index = path.Cells.count > 1 ? 1 : path.Cells.count
     }
@@ -348,7 +348,7 @@ struct heap {
 
     init() {}
 
-    mutating func push(_ p: float32, _ node: int32) {
+    mutating func push(p: float32, node: int32) {
         f.append(p)
         n.append(node)
         var i = f.count - 1
